@@ -111,6 +111,19 @@ def inject_security_context():
 
 
 @app.before_request
+def validate_session_user():
+    # If the database was reset (e.g. a redeploy on an ephemeral host), an old
+    # cookie's user_id could point at nobody -- or at a *different* new account.
+    # Drop any session whose user no longer matches the email it logged in with.
+    uid = session.get("user_id")
+    if uid is None or request.endpoint == "static":
+        return
+    row = get_db().execute("SELECT email FROM users WHERE id = ?", (uid,)).fetchone()
+    if not row or row["email"] != session.get("email"):
+        session.clear()
+
+
+@app.before_request
 def verify_csrf():
     if request.method in ("POST", "PUT", "PATCH", "DELETE"):
         expected = session.get("csrf_token") or ""
@@ -180,6 +193,7 @@ def login():
         if user and pwd_match:
             session.clear()
             session["user_id"] = user["id"]
+            session["email"] = user["email"]
             session["fullname"] = user["fullname"]
             session["role"] = user["role"] if "role" in user.keys() and user["role"] else "user"
             session["csrf_token"] = secrets.token_hex(32)
@@ -243,7 +257,10 @@ def forgot_password():
                 db.commit()
                 reset_link = url_for("reset_password", token=raw_token, _external=True)
                 print(f"[SECURITY] One-time password reset link generated for user_id={user['id']}: {reset_link}")
-            info = "If an account matches that email, a time-limited reset link has been generated (check the server console in local mode)."
+            info = (
+                "If an account matches that email, a time-limited reset link has been generated. "
+                "Email delivery isn't set up yet, so please contact the site owner to receive your link."
+            )
     return render_template("forgot_password.html", error=error, info=info)
 
 @app.route("/reset-password", methods=["GET", "POST"])
@@ -878,7 +895,7 @@ def _recent_coach_attempts(limit=5):
 def evaluate_answer():
     from backend.ai.router import evaluate_resume
 
-    if _is_rate_limited("ai_eval", limit=30, window_seconds=60):
+    if _is_rate_limited("ai_eval", limit=10, window_seconds=60):
         if request.is_json:
             return jsonify({"success": False, "error": "Rate limit exceeded. Please wait a moment."}), 429
         return render_template("answer_coach.html", ai_feedback="Rate limit exceeded. Please wait a moment.", recent_attempts=_recent_coach_attempts()), 429
@@ -1023,7 +1040,7 @@ def save_session():
 def api_chat():
     from backend.ai.router import evaluate_resume
 
-    if _is_rate_limited("ai_chat", limit=30, window_seconds=60):
+    if _is_rate_limited("ai_chat", limit=10, window_seconds=60):
         return jsonify({"success": False, "error": "Rate limit exceeded. Please wait a moment."}), 429
 
     data = request.get_json(silent=True) or {}
@@ -1051,7 +1068,7 @@ def api_chat():
 def api_follow_up():
     from backend.ai.router import evaluate_resume
 
-    if _is_rate_limited("ai_follow_up", limit=30, window_seconds=60):
+    if _is_rate_limited("ai_follow_up", limit=10, window_seconds=60):
         return jsonify({"success": False, "error": "Rate limit exceeded. Please wait a moment."}), 429
 
     data = request.get_json(silent=True) or {}
@@ -1200,6 +1217,17 @@ def handle_server_error(err):
     if request.is_json or request.path.startswith("/api/"):
         return jsonify({"success": False, "error": "Internal server error"}), 500
     return render_template("error.html", code=500, title="Something Went Wrong", message="An unexpected error occurred on the server. Please try again."), 500
+
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("img/favicon.png")
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    body = "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n"
+    return body, 200, {"Content-Type": "text/plain; charset=utf-8"}
+
 
 @app.route("/faq")
 def faq():
