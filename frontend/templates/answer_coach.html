@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Answer Coach</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/answer_coach.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        {% set active_nav = 'coach' %}
+        {% include '_nav.html' %}
+
+        <h1>AI Answer Coach</h1>
+
+        <form action="/evaluate_answer" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="card">
+                <h2>Interview Question</h2>
+                <input
+                    type="text"
+                    name="question"
+                    id="coach-question-input"
+                    value="{{ question or 'Explain what Machine Learning is.' }}"
+                    placeholder="Enter any technical or behavioral interview question..."
+                    style="width:100%;padding:11px 14px;border:1px solid var(--border-strong);border-radius:10px;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);background:#fff;margin-bottom:10px;"
+                    required
+                />
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                    <button type="button" class="preset-chip" onclick="setCoachPreset('Explain what Machine Learning is.', 'Machine Learning is a subset of AI that enables systems to learn patterns from data without explicit hard-coded rules.')">ML Basics</button>
+                    <button type="button" class="preset-chip" onclick="setCoachPreset('Tell me about a time you resolved a technical disagreement or difficult bug.', 'Use STAR: Situation, Task, specific Action taken, measurable Result and lesson learned.')">Behavioral (STAR)</button>
+                    <button type="button" class="preset-chip" onclick="setCoachPreset('How would you design a URL shortener to handle high read traffic?', 'Discuss hashing/base62 IDs, relational vs NoSQL store, Redis caching, read replicas, and rate limiting.')">System Design</button>
+                </div>
+                <label for="coach-expected-input" style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-muted);margin-bottom:6px;">Target Key Points (Optional)</label>
+                <input
+                    type="text"
+                    name="correct_answer"
+                    id="coach-expected-input"
+                    value="{{ correct_answer or 'Machine Learning is a subset of AI that enables systems to learn from data.' }}"
+                    placeholder="Optional rubric or key points you want the coach to check against..."
+                    style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--ink-muted);background:#fff;"
+                />
+            </div>
+
+            <textarea name="user_answer" placeholder="Write or speak your answer clearly here..." required>{{ user_answer or '' }}</textarea>
+
+            <button type="submit">Evaluate Answer</button>
+        </form>
+        {% if ai_feedback %}
+
+        <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+                <h2 style="margin:0;">AI Coaching Feedback</h2>
+                {% if coach_score is defined and coach_score is not none %}
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;padding:6px 14px;border-radius:999px;background:{{ '#ecfdf5' if coach_score >= 60 else '#fef2f2' }};color:{{ '#15803d' if coach_score >= 60 else '#b91c1c' }};border:1px solid {{ '#bbf7d0' if coach_score >= 60 else '#fecaca' }};">
+                    Score: {{ coach_score }}/100
+                </span>
+                {% endif %}
+            </div>
+
+            {% if coach_sections %}
+              <div style="display:grid;gap:12px;">
+                {% if coach_sections.feedback %}
+                <div style="padding:14px 16px;border-radius:10px;background:#faf8f5;border:1px solid var(--border);">
+                  <strong style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-muted);margin-bottom:6px;">Overall Feedback</strong>
+                  <div style="white-space:pre-wrap;line-height:1.6;">{{ coach_sections.feedback }}</div>
+                </div>
+                {% endif %}
+                {% if coach_sections.strengths %}
+                <div style="padding:14px 16px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;">
+                  <strong style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:#15803d;margin-bottom:6px;">Strengths</strong>
+                  <div style="white-space:pre-wrap;line-height:1.6;color:#14532d;">{{ coach_sections.strengths }}</div>
+                </div>
+                {% endif %}
+                {% if coach_sections.weaknesses %}
+                <div style="padding:14px 16px;border-radius:10px;background:#fef2f2;border:1px solid #fecaca;">
+                  <strong style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:#b91c1c;margin-bottom:6px;">Weaknesses</strong>
+                  <div style="white-space:pre-wrap;line-height:1.6;color:#7f1d1d;">{{ coach_sections.weaknesses }}</div>
+                </div>
+                {% endif %}
+                {% if coach_sections.suggestions %}
+                <div style="padding:14px 16px;border-radius:10px;background:#fffbeb;border:1px solid #fde68a;">
+                  <strong style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:#b45309;margin-bottom:6px;">Suggestions for Improvement</strong>
+                  <div style="white-space:pre-wrap;line-height:1.6;color:#78350f;">{{ coach_sections.suggestions }}</div>
+                </div>
+                {% endif %}
+                {% if coach_sections.ideal_answer %}
+                <div style="padding:14px 16px;border-radius:10px;background:#f0fdfa;border:1px solid #99f6e4;">
+                  <strong style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:#0f766e;margin-bottom:6px;">Ideal Answer</strong>
+                  <div style="white-space:pre-wrap;line-height:1.6;color:#134e4a;">{{ coach_sections.ideal_answer }}</div>
+                </div>
+                {% endif %}
+              </div>
+            {% else %}
+              <pre>{{ ai_feedback }}</pre>
+            {% endif %}
+        </div>
+
+        {% endif %}
+
+        {% if recent_attempts %}
+        <div class="card">
+            <h2>Recent Answer Coach Evaluations</h2>
+            <div style="display:grid;gap:10px;">
+              {% for att in recent_attempts %}
+              <div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:#faf8f5;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                <div style="flex:1;min-width:220px;">
+                  <div style="font-weight:600;color:var(--ink);font-size:14px;">{{ att.question }}</div>
+                  <div style="font-size:12px;color:var(--ink-muted);margin-top:3px;">{{ att.created_at }}</div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;background:#fff;border:1px solid var(--border-strong);color:{{ '#15803d' if att.score >= 60 else '#b91c1c' }};">{{ att.score }}/100</span>
+              </div>
+              {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    <script>
+      function setCoachPreset(q, expected) {
+        document.getElementById('coach-question-input').value = q;
+        document.getElementById('coach-expected-input').value = expected;
+      }
+    </script>
+    <script src="{{ url_for('static', filename='js/answer_coach.js') }}"></script>
+</body>
+
+</html>

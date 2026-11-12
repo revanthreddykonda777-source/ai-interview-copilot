@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Analysis — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+  <style>
+    .analysis-wrapper {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 44px 20px 64px;
+    }
+
+    .analysis-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 30px 32px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(24, 22, 20, 0.04);
+    }
+
+    .analysis-title {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .score-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .skills-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skills-list li {
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      color: var(--ink);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .resume-text-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--ink);
+      padding: 18px 20px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+      max-height: 420px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.65;
+      font-family: inherit;
+    }
+
+    .flash-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .question-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+    }
+
+    .question-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .question-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .question-item-text {
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .question-item-meta {
+      display: flex;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-muted);
+      white-space: nowrap;
+    }
+
+    .question-item-hint {
+      color: var(--ink-muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .question-item-answer {
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="analysis-wrapper">
+    {% set active_nav = 'resume' %}
+    {% include '_nav.html' %}
+
+    <div style="margin-bottom: 28px;">
+      <h1 class="auth-title" style="text-align: left;">Resume Analysis Complete</h1>
+      <p class="auth-subtitle" style="text-align: left; margin-bottom: 0;">Extracted skills, ATS feedback, and your
+        tailored interview questions.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flash-error">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="analysis-card">
+      <h2 class="analysis-title">{{ 'Target Role Skill Match' if job_description else 'Skill Match Score' }}</h2>
+      <div class="score-text">{{ match_pct if match_pct is defined else [skills|length * 10, 100]|min }}%</div>
+      {% if job_description %}
+        {% if matched_skills %}
+        <p style="font-size:13px;font-weight:700;color:var(--sage);margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.05em;">Matched JD Skills</p>
+        <ul class="skills-list">
+          {% for skill in matched_skills %}
+          <li style="background:#ecfdf5;border-color:#bbf7d0;color:#15803d;">{{ skill }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% if missing_jd_skills %}
+        <p style="font-size:13px;font-weight:700;color:var(--crimson);margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.05em;">Missing JD Keywords</p>
+        <ul class="skills-list">
+          {% for skill in missing_jd_skills %}
+          <li style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;">{{ skill }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="analysis-card">
+      <h2 class="analysis-title">Skills Detected</h2>
+      <ul class="skills-list">
+        {% for skill in skills %}
+        <li>{{ skill }}</li>
+        {% endfor %}
+      </ul>
+      {% if not skills %}
+      <p style="color: var(--ink-muted); font-size: 14px;">No specific skills were detected in this document.</p>
+      {% endif %}
+    </div>
+
+    <div class="analysis-card">
+      <h2 class="analysis-title">Extracted Text</h2>
+      <pre class="resume-text-box">{{ resume_text }}</pre>
+    </div>
+
+    {% if feedback %}
+    <div class="analysis-card">
+      <h2 class="analysis-title">AI Feedback</h2>
+      <div class="resume-text-box">{{ feedback }}</div>
+    </div>
+    {% endif %}
+
+    {% if questions %}
+    <div class="analysis-card">
+      <h2 class="analysis-title">Tailored Interview Questions ({{ questions|length }})</h2>
+      {% for q in questions %}
+      <div class="question-item">
+        <div class="question-item-header">
+          <div class="question-item-meta">
+            <span class="badge">{{ q.difficulty }}</span>
+            <span class="badge">{{ q.type }}</span>
+          </div>
+        </div>
+        <p class="question-item-text">{{ loop.index }}. {{ q.question }}</p>
+        {% if q.hint %}<p class="question-item-hint">Hint: {{ q.hint }}</p>{% endif %}
+        <p class="question-item-answer"><strong>Sample answer:</strong> {{ q.answer }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+      <a href="/dashboard" class="auth-btn"
+        style="width:auto; display:inline-block; text-decoration:none; background:var(--surface); color:var(--ink); border-color:var(--border-strong);">←
+        Back to Dashboard</a>
+      <a href="/resume" class="auth-btn"
+        style="width:auto; display:inline-block; text-decoration:none; background:var(--surface); color:var(--ink); border-color:var(--border-strong);">Re-upload / Change Role</a>
+      <button type="button" onclick="window.print()" class="auth-btn"
+        style="width:auto; background:var(--surface); color:var(--ink); border-color:var(--border-strong);">Print / Save PDF</button>
+      {% if questions %}
+      <a href="/#resume_tailored" class="auth-btn"
+        style="width:auto; display:inline-block; text-decoration:none; background:var(--accent); border-color:var(--accent);">Start
+        Tailored Interview →</a>
+      {% endif %}
+    </div>
+  </div>
+</body>
+
+</html>

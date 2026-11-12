@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ code }} — {{ title }} | AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card" style="text-align:center;">
+      <div class="auth-logo" style="justify-content:center;">
+        <span class="auth-logo-text">AI Interview <span class="auth-accent">Copilot</span></span>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:700;color:var(--accent);margin:8px 0;">{{ code }}</div>
+      <h1 class="auth-title">{{ title }}</h1>
+      <p class="auth-subtitle" style="margin-bottom:24px;">{{ message }}</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <a href="/dashboard" class="auth-btn" style="width:auto;padding:10px 20px;text-decoration:none;">Go to Dashboard</a>
+        <a href="/" class="auth-btn" style="width:auto;padding:10px 20px;text-decoration:none;background:var(--surface);color:var(--ink);border-color:var(--border-strong);">Practice Studio</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

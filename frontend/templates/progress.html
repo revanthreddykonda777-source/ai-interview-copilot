@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress Tracker — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+  <style>
+    .progress-wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 44px 20px 64px;
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .progress-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--stat-color, var(--accent));
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .stat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--stat-color, var(--accent));
+      margin-bottom: 4px;
+    }
+
+    .stat-card--terracotta { --stat-color: var(--accent); }
+    .stat-card--teal       { --stat-color: var(--teal); }
+    .stat-card--sage       { --stat-color: var(--sage); }
+    .stat-card--ochre      { --stat-color: var(--ochre); }
+    .stat-card--crimson    { --stat-color: var(--crimson); }
+
+    .stat-lbl {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .history-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 8px 24px rgba(24, 22, 20, 0.05);
+    }
+
+    .history-card h2 {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 18px;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .history-table th {
+      background: var(--bg);
+      color: var(--ink-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+
+    .score-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+      color: var(--ink);
+      border: 1px solid var(--border-strong);
+    }
+
+    .back-btn {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--ink);
+      padding: 8px 16px;
+      border-radius: 9px;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: var(--bg-subtle);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="progress-wrapper">
+    {% set active_nav = 'progress' %}
+    {% include '_nav.html' %}
+
+    <div class="progress-header">
+      <div class="progress-logo">
+        <i data-lucide="trending-up" style="width:22px;height:22px;color:var(--accent);"></i>
+        <span>Progress Tracker</span>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card stat-card--terracotta">
+        <div class="stat-num">{{ total_sessions }}</div>
+        <div class="stat-lbl">Sessions Completed</div>
+      </div>
+      <div class="stat-card stat-card--teal">
+        <div class="stat-num">{{ avg_score }}%</div>
+        <div class="stat-lbl">Average Score</div>
+      </div>
+      <div class="stat-card stat-card--sage">
+        <div class="stat-num">{{ best_score }}%</div>
+        <div class="stat-lbl">Best Score</div>
+      </div>
+      <div class="stat-card stat-card--ochre">
+        <div class="stat-num">{{ bookmark_count }}</div>
+        <div class="stat-lbl">Bookmarked</div>
+        {% if bookmark_count > 0 %}<a href="/#bookmarked" style="display:inline-block;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--ochre);text-decoration:none;">Practice Saved →</a>{% endif %}
+      </div>
+      <div class="stat-card stat-card--crimson">
+        <div class="stat-num">{{ missed_count }}</div>
+        <div class="stat-lbl">Needs Retry</div>
+        {% if missed_count > 0 %}<a href="/#missed" style="display:inline-block;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--crimson);text-decoration:none;">Retry Missed →</a>{% endif %}
+      </div>
+    </div>
+
+    {% if topic_stats %}
+    <div class="history-card" style="margin-bottom: 24px;">
+      <h2>Topic Mastery</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+        {% for ts in topic_stats %}
+        {% set bar_color = 'var(--sage)' if ts.accuracy >= 75 else ('var(--ochre)' if ts.accuracy >= 50 else 'var(--accent)') %}
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <strong style="font-size:14px;color:var(--ink);">{{ ts.label }}</strong>
+            <span class="score-pill" style="color:{{ bar_color }};">{{ ts.accuracy }}%</span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:6px;">
+            <div style="height:100%;width:{{ ts.accuracy }}%;background:{{ bar_color }};border-radius:99px;"></div>
+          </div>
+          <span style="font-size:12px;color:var(--ink-muted);">{{ ts.sessions }} session{{ 's' if ts.sessions != 1 else '' }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="history-card">
+      <h2>{{ fullname }}'s Practice History</h2>
+      {% if sessions %}
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Score</th>
+            <th>Accuracy</th>
+            <th>Date &amp; Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in sessions %}
+          <tr>
+            <td style="text-transform: capitalize; font-weight: 600;">{{ s.topic_id.replace('_', ' ') }}</td>
+            <td><span class="score-pill">{{ s.score }} / {{ s.total }}</span></td>
+            <td>{{ ((s.score / s.total) * 100)|round|int if s.total > 0 else 0 }}%</td>
+            <td style="color:var(--ink-muted);">{{ s.date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color: var(--ink-muted);">You haven't completed any practice sessions yet. <a href="/"
+          style="color:var(--accent);font-weight:600;">Start practicing →</a></p>
+      {% endif %}
+    </div>
+
+    {% if coach_attempts %}
+    <div class="history-card" style="margin-top: 24px;">
+      <h2>Recent Answer Coach Evaluations</h2>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Score</th>
+            <th>Date &amp; Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in coach_attempts %}
+          <tr>
+            <td style="font-weight: 600;">{{ c.question }}</td>
+            <td><span class="score-pill" style="color:{{ 'var(--sage)' if c.score >= 60 else 'var(--crimson)' }};">{{ c.score }}/100</span></td>
+            <td style="color:var(--ink-muted);">{{ c.created_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+
+</html>

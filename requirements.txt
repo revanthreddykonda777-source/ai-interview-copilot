@@ -1,0 +1,6 @@
+Flask
+Werkzeug
+pdfplumber
+google-generativeai
+python-dotenv
+ollama

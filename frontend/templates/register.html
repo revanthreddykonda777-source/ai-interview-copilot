@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+</head>
+<body>
+
+  <div class="scroll-progress-track">
+    <div id="scroll-progress-bar" class="scroll-progress-bar"></div>
+  </div>
+  <div id="auth-three-bg" class="auth-three-bg" aria-hidden="true"></div>
+
+  <div class="auth-page-shell">
+    <nav class="auth-topnav">
+      <a href="/" class="auth-brand">
+        <span class="auth-brand-dot"></span>
+        <span>AI Interview <span class="auth-accent">Copilot</span></span>
+      </a>
+      <div class="auth-nav-actions">
+        <a href="/" class="nav-pill-btn"><i data-lucide="compass" style="width:14px;height:14px;"></i> Explore Tracks</a>
+        <a href="/faq" class="nav-pill-btn">FAQ</a>
+        <a href="/login" class="nav-pill-btn nav-pill-btn--primary">Sign In</a>
+      </div>
+    </nav>
+
+    <div class="auth-split">
+      <!-- Left Classic Editorial Pitch -->
+      <section class="auth-editorial">
+        <span class="editorial-kicker">
+          <i data-lucide="award" style="width:13px;height:13px;"></i> Free Studio Account
+        </span>
+
+        <h1 class="editorial-heading">
+          Turn every practice session into <span class="editorial-serif">measurable skill.</span>
+        </h1>
+
+        <p class="editorial-copy">
+          Create your workspace to save ATS resume reports, track per-topic accuracy, bookmark tricky questions, and drill AI engineering interviews.
+        </p>
+
+        <div class="editorial-highlights">
+          <div class="highlight-row">
+            <span class="highlight-icon highlight-icon--terracotta">
+              <i data-lucide="layers" style="width:17px;height:17px;"></i>
+            </span>
+            <div class="highlight-text">
+              <strong>20 Tracks · 1,000+ Questions</strong>
+              <span>From LLMs, RAG, and MLOps to React, Python, SQL, and Leadership.</span>
+            </div>
+          </div>
+
+          <div class="highlight-row">
+            <span class="highlight-icon highlight-icon--teal">
+              <i data-lucide="bookmark" style="width:17px;height:17px;"></i>
+            </span>
+            <div class="highlight-text">
+              <strong>Personal Review Decks</strong>
+              <span>Bookmark standout prompts and automatically retry missed questions.</span>
+            </div>
+          </div>
+
+          <div class="highlight-row">
+            <span class="highlight-icon highlight-icon--ochre">
+              <i data-lucide="mic" style="width:17px;height:17px;"></i>
+            </span>
+            <div class="highlight-text">
+              <strong>Voice &amp; Code Mode Built-In</strong>
+              <span>Speak naturally with pacing metrics or write solutions in code mode.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-cue">
+          <i data-lucide="arrow-down" style="width:14px;height:14px;"></i>
+          <span>Scroll to explore the workflow</span>
+        </div>
+      </section>
+
+      <!-- Right 3D Tactile Register Card -->
+      <section>
+        <div class="auth-card">
+          <div class="auth-logo">
+            <span class="auth-brand-dot"></span>
+            <span class="auth-logo-text">AI Interview <span class="auth-accent">Copilot</span></span>
+          </div>
+
+          <h2 class="auth-title">Create your account</h2>
+          <p class="auth-subtitle">Start practicing and ace your next interview</p>
+
+          {% if error %}
+            <div class="auth-alert auth-alert--error">Error: {{ error }}</div>
+          {% endif %}
+
+          <form method="POST" action="/register" autocomplete="off" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="form-group">
+              <label class="form-label" for="fullname">Full Name</label>
+              <div class="input-wrap">
+                <span class="input-icon"><i data-lucide="user" style="width:16px;height:16px;"></i></span>
+                <input
+                  id="fullname"
+                  type="text"
+                  name="fullname"
+                  class="form-input form-input--with-icon"
+                  placeholder="Alex Morgan"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address</label>
+              <div class="input-wrap">
+                <span class="input-icon"><i data-lucide="mail" style="width:16px;height:16px;"></i></span>
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  class="form-input form-input--with-icon"
+                  placeholder="you@example.com"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <div class="input-wrap">
+                <span class="input-icon"><i data-lucide="lock" style="width:16px;height:16px;"></i></span>
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  class="form-input form-input--with-icon form-input--with-toggle"
+                  placeholder="At least 8 characters"
+                  autocomplete="new-password"
+                  required
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  data-toggle-password="password"
+                  aria-label="Show password"
+                >
+                  <i data-lucide="eye" style="width:16px;height:16px;"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="auth-btn auth-btn--terracotta">Create Account →</button>
+          </form>
+
+          <p class="auth-switch">
+            Already have an account? <a href="/login" class="auth-link">Sign in</a>
+          </p>
+          <p class="auth-switch" style="margin-top:12px;font-size:12px;">
+            <a href="/faq" class="auth-link">FAQ</a> ·
+            <a href="/privacy" class="auth-link">Privacy</a> ·
+            <a href="/statements" class="auth-link">Statements</a>
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Scroll-Animated Showcase -->
+    <section class="auth-showcase">
+      <div class="showcase-header scroll-reveal">
+        <h2>Everything needed to prepare deliberately</h2>
+        <p>Practice fundamentals, system design, and real AI engineering depth in one place.</p>
+      </div>
+
+      <div class="showcase-grid">
+        <article class="showcase-card scroll-reveal delay-1" style="--sc-accent: var(--accent);">
+          <span class="showcase-step">01 · RESUME INSIGHTS</span>
+          <h3>ATS + Job Description Fit</h3>
+          <p>Compare your resume against any job description to catch missing keywords before applying.</p>
+        </article>
+
+        <article class="showcase-card scroll-reveal delay-2" style="--sc-accent: var(--teal);">
+          <span class="showcase-step">02 · HUMAN-STYLE QUESTIONS</span>
+          <h3>Simple to Senior Progression</h3>
+          <p>Generated resume questions move smoothly from warm-up fundamentals to trade-offs and edge cases.</p>
+        </article>
+
+        <article class="showcase-card scroll-reveal delay-3" style="--sc-accent: var(--sage);">
+          <span class="showcase-step">03 · PROGRESS ANALYTICS</span>
+          <h3>Per-Topic Mastery</h3>
+          <p>Inspect accuracy across tracks, save reports to PDF, and revisit saved answers anytime.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js" crossorigin></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+  <script src="{{ url_for('static', filename='js/auth_motion.js') }}"></script>
+</body>
+</html>

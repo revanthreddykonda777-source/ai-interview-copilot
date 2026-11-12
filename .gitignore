@@ -1,0 +1,23 @@
+# Environment & Secrets
+.env
+data/.flask_secret
+
+# Database & User Uploads
+data/*.db
+uploads/*
+!uploads/.gitkeep
+
+# Python & Virtual Environment
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.claude/
+
+

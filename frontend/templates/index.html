@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Interview Copilot – Practice technical and behavioral interviews with AI coaching, timers, and tailored resume questions." />
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <title>AI Interview Copilot — Studio</title>
+  <script>
+    window.getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,500..700;1,6..72,500..600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <!-- React 18 + Babel + Three.js + Framer Motion + Lucide -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.11.17/dist/framer-motion.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- App Scripts -->
+  <script type="text/babel" src="{{ url_for('static', filename='js/three_bg.js') }}"></script>
+  <script type="text/babel" src="{{ url_for('static', filename='js/widgets.js') }}"></script>
+  <script type="text/babel" src="{{ url_for('static', filename='js/components.js') }}"></script>
+  <script type="text/babel" src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>

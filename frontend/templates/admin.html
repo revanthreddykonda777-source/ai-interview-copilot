@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+  <style>
+    .admin-wrapper { max-width: 980px; margin: 0 auto; padding: 44px 20px 64px; }
+    .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .admin-logo { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 22px; font-weight: 700; color: var(--ink); }
+    .admin-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; box-shadow: 0 8px 24px rgba(24, 22, 20, 0.05); }
+    .admin-card h2 { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 18px; }
+    .admin-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    .admin-table th, .admin-table td { padding: 13px 14px; text-align: left; border-bottom: 1px solid var(--border); color: var(--ink); font-size: 14px; }
+    .admin-table th { background: var(--bg); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--ink-muted); }
+    .admin-table tr:hover { background: var(--bg); }
+    .score-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace; background: var(--bg); color: var(--ink); border: 1px solid var(--border-strong); }
+    .back-btn { background: var(--surface); border: 1px solid var(--border-strong); color: var(--ink); padding: 8px 16px; border-radius: 9px; font-size: 13.5px; font-weight: 600; text-decoration: none; }
+    .back-btn:hover { background: var(--bg-subtle); }
+  </style>
+</head>
+<body>
+  <div class="admin-wrapper">
+    {% set active_nav = 'admin' %}
+    {% include '_nav.html' %}
+
+    <div class="admin-header">
+      <div class="admin-logo">
+        <i data-lucide="shield-check" style="width:22px;height:22px;color:var(--accent);"></i>
+        <span>Admin Dashboard</span>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h2>Recent Interview Sessions</h2>
+      {% if sessions %}
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Candidate</th>
+              <th>Topic</th>
+              <th>Score</th>
+              <th>Date &amp; Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in sessions %}
+            <tr>
+              <td style="font-family:'JetBrains Mono',monospace;color:var(--ink-muted);">#{{ s.id }}</td>
+              <td style="font-weight:600;">{{ s.fullname }}</td>
+              <td style="text-transform: capitalize;">{{ s.topic_id.replace('_', ' ') }}</td>
+              <td><span class="score-badge">{{ s.score }} / {{ s.total }}</span></td>
+              <td style="color:var(--ink-muted);">{{ s.date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p style="color: var(--ink-muted);">No interview sessions have been recorded yet.</p>
+      {% endif %}
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

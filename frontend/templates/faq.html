@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+  <style>
+    .doc-wrapper { max-width: 860px; margin: 0 auto; padding: 44px 20px 64px; }
+    .doc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--border); gap: 16px; }
+    .doc-logo { display: inline-flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 20px; font-weight: 700; color: var(--ink); text-decoration: none; }
+    .brand-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); display: inline-block; }
+    .doc-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .doc-pill { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none; }
+    .doc-pill:hover { background: var(--bg-subtle); }
+    .doc-pill.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+    .doc-hero { margin-bottom: 28px; }
+    .doc-kicker { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
+    .doc-title { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 8px; }
+    .doc-subtitle { color: var(--ink-muted); font-size: 15px; line-height: 1.6; }
+    .faq-list { display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .faq-item[open] { border-color: var(--border-strong); box-shadow: 0 6px 20px rgba(24, 22, 20, 0.05); }
+    .faq-item summary { list-style: none; cursor: pointer; padding: 18px 22px; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-answer { padding: 0 22px 18px; color: var(--ink-muted); font-size: 14.5px; line-height: 1.65; border-top: 1px solid var(--border); padding-top: 14px; }
+    .doc-footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--ink-soft); }
+    .doc-footer a { color: var(--ink-muted); text-decoration: none; font-weight: 600; }
+    .doc-footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="doc-wrapper">
+    <header class="doc-header">
+      <a href="/" class="doc-logo"><span class="brand-dot"></span><span>Interview Copilot</span></a>
+      <nav class="doc-nav">
+        <a href="/faq" class="doc-pill active">FAQ</a>
+        <a href="/privacy" class="doc-pill">Privacy</a>
+        <a href="/statements" class="doc-pill">Statements</a>
+        <a href="/" class="doc-pill">← Home</a>
+      </nav>
+    </header>
+
+    <div class="doc-hero">
+      <div class="doc-kicker">Help &amp; Documentation</div>
+      <h1 class="doc-title">Frequently Asked Questions</h1>
+      <p class="doc-subtitle">How practice sessions, resume analysis, AI fallback, and scoring work in AI Interview Copilot.</p>
+    </div>
+
+    <div class="faq-list">
+      <details class="faq-item" open>
+        <summary>
+          <span>How does AI answer evaluation work?</span>
+          <i data-lucide="chevron-down" style="width:18px;height:18px;color:var(--ink-soft);"></i>
+        </summary>
+        <div class="faq-answer">
+          When you submit an answer, the app evaluates it against technical accuracy, completeness, clarity, relevance, and communication skills using Google Gemini first. Scores of 60/100 or above count as passing.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span>What happens if Gemini reaches its API quota or is unavailable?</span>
+          <i data-lucide="chevron-down" style="width:18px;height:18px;color:var(--ink-soft);"></i>
+        </summary>
+        <div class="faq-answer">
+          AI Interview Copilot automatically switches to your local Ollama model (such as <code>qwen3:1.7b</code>) to handle resume analysis, question generation, answer evaluation, follow-up questions, and chat. If neither AI service is reachable, answer evaluation falls back to built-in similarity scoring so practice never stops.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span>How are resume-tailored interview questions generated?</span>
+          <i data-lucide="chevron-down" style="width:18px;height:18px;color:var(--ink-soft);"></i>
+        </summary>
+        <div class="faq-answer">
+          Upload a PDF resume from the Resume page. The parser extracts your text and skills, provides ATS feedback, and generates 10 conversational interview questions ordered progressively from Beginner fundamentals on your skills up to Intermediate and Advanced scenarios.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span>Does Voice Input record or upload audio to the server?</span>
+          <i data-lucide="chevron-down" style="width:18px;height:18px;color:var(--ink-soft);"></i>
+        </summary>
+        <div class="faq-answer">
+          No. Voice Input uses your browser’s built-in Web Speech API (<code>SpeechRecognition</code>) to transcribe speech into the text box locally in the browser. Audio files are not saved by this app.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span>Which resume file formats are supported?</span>
+          <i data-lucide="chevron-down" style="width:18px;height:18px;color:var(--ink-soft);"></i>
+        </summary>
+        <div class="faq-answer">
+          Currently <strong>PDF (<code>.pdf</code>)</strong> files with selectable text are supported. Scanned image-only PDFs without embedded text cannot be parsed.
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span>How do I save and track my progress over time?</span>
+          <i data-lucide="chevron-down" style="width:18px;height:18px;color:var(--ink-soft);"></i>
+        </summary>
+        <div class="faq-answer">
+          Sign in to your account before completing a practice session. Finished sessions are recorded automatically and can be reviewed anytime on the <a href="/progress" style="color:var(--accent);font-weight:600;">Progress Tracker</a> page.
+        </div>
+      </details>
+    </div>
+
+    <footer class="doc-footer">
+      <span>AI Interview Copilot</span>
+      <div style="display:flex;gap:16px;">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/statements">Terms &amp; Statements</a>
+        <a href="/dashboard">Dashboard</a>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>
+

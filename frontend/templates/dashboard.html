@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+  <style>
+    .dashboard-wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 44px 20px 64px;
+    }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dash-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .dash-welcome {
+      background: linear-gradient(135deg, rgba(194, 65, 12, 0.07), var(--surface) 60%, rgba(15, 118, 110, 0.06));
+      border: 1px solid var(--border-strong);
+      border-top: 3px solid var(--accent);
+      border-radius: 20px;
+      padding: 36px 40px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 24px rgba(24, 22, 20, 0.05);
+    }
+
+    .dash-welcome h2 {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .dash-welcome p {
+      color: var(--ink-muted);
+      font-size: 16px;
+    }
+
+    .dash-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .dash-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--card-accent, var(--accent));
+      border-radius: 16px;
+      padding: 26px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(24, 22, 20, 0.04);
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--card-accent, var(--accent));
+      box-shadow: 0 12px 28px rgba(24, 22, 20, 0.08);
+    }
+
+    .dash-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--card-tint, var(--accent-soft));
+      border: 1px solid var(--card-border, var(--border));
+      color: var(--card-accent, var(--accent));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dash-card--terracotta { --card-accent: var(--accent); --card-tint: var(--accent-soft); --card-border: rgba(194, 65, 12, 0.25); }
+    .dash-card--teal       { --card-accent: var(--teal);   --card-tint: var(--teal-soft);   --card-border: var(--teal-border); }
+    .dash-card--ochre      { --card-accent: var(--ochre);  --card-tint: var(--ochre-soft);  --card-border: var(--ochre-border); }
+    .dash-card--sage       { --card-accent: var(--sage);   --card-tint: var(--sage-soft);   --card-border: var(--sage-border); }
+    .dash-card--crimson    { --card-accent: var(--crimson);--card-tint: var(--crimson-soft);--card-border: var(--crimson-border); }
+
+    .dash-card-title {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .dash-card-desc {
+      font-size: 14px;
+      color: var(--ink-muted);
+      line-height: 1.55;
+    }
+
+    .logout-btn {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--ink);
+      padding: 8px 16px;
+      border-radius: 9px;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .logout-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-wrapper">
+    {% set active_nav = 'dashboard' %}
+    {% include '_nav.html' %}
+
+    <div class="dash-welcome">
+      <h2>Welcome back, {{ fullname }}</h2>
+      <p>Choose a practice track, upload a resume for tailored questions, or review your session history.</p>
+    </div>
+
+    <div class="dash-cards">
+      <a href="/" class="dash-card dash-card--terracotta">
+        <div class="dash-card-icon"><i data-lucide="layers" style="width:20px;height:20px;"></i></div>
+        <div class="dash-card-title">Practice Questions</div>
+        <div class="dash-card-desc">Timed interview Q&amp;A across 20 AI role, engineering, and business tracks.</div>
+      </a>
+
+      <a href="/resume" class="dash-card dash-card--teal">
+        <div class="dash-card-icon"><i data-lucide="file-up" style="width:20px;height:20px;"></i></div>
+        <div class="dash-card-title">Upload Resume &amp; JD Match</div>
+        <div class="dash-card-desc">Extract skills (PDF/DOCX), match against a target job description, and generate questions.</div>
+      </a>
+
+      <a href="/analysis" class="dash-card dash-card--sage">
+        <div class="dash-card-icon"><i data-lucide="file-check-2" style="width:20px;height:20px;"></i></div>
+        <div class="dash-card-title">Saved Resume Report</div>
+        <div class="dash-card-desc">Reopen your latest ATS analysis, missing JD keywords, and tailored questions.</div>
+      </a>
+
+      <a href="/answer-coach" class="dash-card dash-card--ochre">
+        <div class="dash-card-icon"><i data-lucide="sparkles" style="width:20px;height:20px;"></i></div>
+        <div class="dash-card-title">AI Answer Coach</div>
+        <div class="dash-card-desc">Draft open-ended responses and receive structured coaching with history saved.</div>
+      </a>
+
+      <a href="/progress" class="dash-card dash-card--teal">
+        <div class="dash-card-icon"><i data-lucide="trending-up" style="width:20px;height:20px;"></i></div>
+        <div class="dash-card-title">Progress Tracker</div>
+        <div class="dash-card-desc">Track your completed sessions, coach scores, accuracy, and improvement.</div>
+      </a>
+
+      <a href="/profile" class="dash-card dash-card--sage">
+        <div class="dash-card-icon"><i data-lucide="user-cog" style="width:20px;height:20px;"></i></div>
+        <div class="dash-card-title">Account &amp; Privacy</div>
+        <div class="dash-card-desc">Update your profile, change password, or clear saved resume data.</div>
+      </a>
+
+      {% if role == 'admin' %}
+      <a href="/admin" class="dash-card dash-card--crimson">
+        <div class="dash-card-icon"><i data-lucide="shield-check" style="width:20px;height:20px;"></i></div>
+        <div class="dash-card-title">Admin Dashboard</div>
+        <div class="dash-card-desc">View recent interview sessions and candidate scores.</div>
+      </a>
+      {% endif %}
+    </div>
+
+    <div style="margin-top:32px;padding-top:18px;border-top:1px solid var(--border);display:flex;gap:18px;flex-wrap:wrap;font-size:13px;">
+      <a href="/faq" style="color:var(--ink-muted);text-decoration:none;font-weight:600;">FAQ</a>
+      <a href="/privacy" style="color:var(--ink-muted);text-decoration:none;font-weight:600;">Privacy Policy</a>
+      <a href="/statements" style="color:var(--ink-muted);text-decoration:none;font-weight:600;">Terms &amp; Statements</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

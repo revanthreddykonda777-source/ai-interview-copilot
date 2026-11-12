@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+  <style>
+    .doc-wrapper { max-width: 860px; margin: 0 auto; padding: 44px 20px 64px; }
+    .doc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--border); gap: 16px; }
+    .doc-logo { display: inline-flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 20px; font-weight: 700; color: var(--ink); text-decoration: none; }
+    .brand-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); display: inline-block; }
+    .doc-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .doc-pill { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none; }
+    .doc-pill:hover { background: var(--bg-subtle); }
+    .doc-pill.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+    .doc-hero { margin-bottom: 24px; }
+    .doc-kicker { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
+    .doc-title { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 8px; }
+    .doc-subtitle { color: var(--ink-muted); font-size: 15px; line-height: 1.6; }
+    .doc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 26px 28px; margin-bottom: 16px; }
+    .doc-card h2 { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 10px; display: flex; align-items: center; gap: 9px; }
+    .doc-card p, .doc-card li { color: var(--ink-muted); font-size: 14.5px; line-height: 1.7; }
+    .doc-card ul { padding-left: 20px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .doc-footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--ink-soft); }
+    .doc-footer a { color: var(--ink-muted); text-decoration: none; font-weight: 600; }
+    .doc-footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="doc-wrapper">
+    <header class="doc-header">
+      <a href="/" class="doc-logo"><span class="brand-dot"></span><span>Interview Copilot</span></a>
+      <nav class="doc-nav">
+        <a href="/faq" class="doc-pill">FAQ</a>
+        <a href="/privacy" class="doc-pill active">Privacy</a>
+        <a href="/statements" class="doc-pill">Statements</a>
+        <a href="/" class="doc-pill">← Home</a>
+      </nav>
+    </header>
+
+    <div class="doc-hero">
+      <div class="doc-kicker">Data &amp; Privacy</div>
+      <h1 class="doc-title">Privacy Policy</h1>
+      <p class="doc-subtitle">Last updated: November 2026. This policy explains what information AI Interview Copilot collects and how it is processed.</p>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="database" style="width:18px;height:18px;color:var(--accent);"></i> 1. Information Stored Locally</h2>
+      <p>Your account and practice data are stored in the application’s local SQLite database (<code>database.db</code>) and uploaded files directory (<code>uploads/</code>):</p>
+      <ul>
+        <li><strong>Account details:</strong> Full name, email address, and a securely hashed password.</li>
+        <li><strong>Resume data:</strong> Uploaded PDF files, extracted plain text, detected skills, and your generated resume-tailored questions.</li>
+        <li><strong>Practice history:</strong> Topic IDs, scores, question totals, and completion timestamps.</li>
+      </ul>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="cpu" style="width:18px;height:18px;color:var(--accent);"></i> 2. AI Processing (Gemini &amp; Local Ollama)</h2>
+      <p>When you request resume feedback, question generation, answer evaluation, follow-up questions, or chat coaching:</p>
+      <ul>
+        <li><strong>Google Gemini API:</strong> Relevant text (resume text, question, or answer) is sent over HTTPS to Google’s Generative Language API using your configured API key.</li>
+        <li><strong>Ollama Fallback:</strong> If Gemini is unavailable or hits quota limits, prompts are processed locally on your machine via Ollama (<code>127.0.0.1:11434</code>) with no external transmission.</li>
+      </ul>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="mic" style="width:18px;height:18px;color:var(--accent);"></i> 3. Cookies &amp; Voice Input</h2>
+      <ul>
+        <li><strong>Session cookie:</strong> A standard Flask session cookie keeps you signed in and associates uploaded resumes with your account.</li>
+        <li><strong>Microphone / Voice Input:</strong> Speech-to-text runs via your browser’s Web Speech API. Audio streams are not recorded or stored on our server.</li>
+      </ul>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="shield" style="width:18px;height:18px;color:var(--accent);"></i> 4. Data Control &amp; Caution</h2>
+      <p>Avoid uploading highly sensitive personal identifiers (such as government ID numbers or banking details) inside resumes when testing with external AI APIs. You may remove uploaded PDFs from <code>uploads/</code> or clear local records in <code>database.db</code> at any time.</p>
+    </div>
+
+    <footer class="doc-footer">
+      <span>AI Interview Copilot</span>
+      <div style="display:flex;gap:16px;">
+        <a href="/faq">FAQ</a>
+        <a href="/statements">Terms &amp; Statements</a>
+        <a href="/dashboard">Dashboard</a>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>
+

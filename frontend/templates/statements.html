@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms &amp; Statements — AI Interview Copilot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+  <style>
+    .doc-wrapper { max-width: 860px; margin: 0 auto; padding: 44px 20px 64px; }
+    .doc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--border); gap: 16px; }
+    .doc-logo { display: inline-flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 20px; font-weight: 700; color: var(--ink); text-decoration: none; }
+    .brand-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); display: inline-block; }
+    .doc-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .doc-pill { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none; }
+    .doc-pill:hover { background: var(--bg-subtle); }
+    .doc-pill.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+    .doc-hero { margin-bottom: 24px; }
+    .doc-kicker { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
+    .doc-title { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 8px; }
+    .doc-subtitle { color: var(--ink-muted); font-size: 15px; line-height: 1.6; }
+    .doc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 26px 28px; margin-bottom: 16px; }
+    .doc-card h2 { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 10px; display: flex; align-items: center; gap: 9px; }
+    .doc-card p, .doc-card li { color: var(--ink-muted); font-size: 14.5px; line-height: 1.7; }
+    .doc-card ul { padding-left: 20px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .doc-footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--ink-soft); }
+    .doc-footer a { color: var(--ink-muted); text-decoration: none; font-weight: 600; }
+    .doc-footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="doc-wrapper">
+    <header class="doc-header">
+      <a href="/" class="doc-logo"><span class="brand-dot"></span><span>Interview Copilot</span></a>
+      <nav class="doc-nav">
+        <a href="/faq" class="doc-pill">FAQ</a>
+        <a href="/privacy" class="doc-pill">Privacy</a>
+        <a href="/statements" class="doc-pill active">Statements</a>
+        <a href="/" class="doc-pill">← Home</a>
+      </nav>
+    </header>
+
+    <div class="doc-hero">
+      <div class="doc-kicker">Governance &amp; Disclosures</div>
+      <h1 class="doc-title">Terms &amp; Statements</h1>
+      <p class="doc-subtitle">Terms of use, AI coaching disclosures, and platform statements for AI Interview Copilot.</p>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="file-text" style="width:18px;height:18px;color:var(--accent);"></i> 1. Terms of Use</h2>
+      <p>AI Interview Copilot is provided as an interactive interview preparation and learning workspace. By using the platform, you agree to:</p>
+      <ul>
+        <li>Use the practice tools, resume analyzer, and coaching features for lawful personal or educational preparation.</li>
+        <li>Keep your account credentials confidential and avoid attempting unauthorized access to other users’ resumes or sessions.</li>
+        <li>Only upload resumes and content you have the right to use.</li>
+      </ul>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="sparkles" style="width:18px;height:18px;color:var(--accent);"></i> 2. AI Accuracy &amp; Coaching Statement</h2>
+      <p>Scores, ATS feedback, generated questions, follow-ups, and chat tips are produced automatically by large language models (Google Gemini or local Ollama) or similarity heuristics. They are intended solely as practice guidance—real interviewers evaluate context, culture fit, and problem-solving differently, and AI outputs may occasionally contain inaccuracies or omissions.</p>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="award" style="width:18px;height:18px;color:var(--accent);"></i> 3. No Employment Guarantee Statement</h2>
+      <p>Completing practice tracks, scoring well on mock questions, or receiving a high resume match score does not guarantee job interviews, offers, or ATS outcomes with third-party employers.</p>
+    </div>
+
+    <div class="doc-card">
+      <h2><i data-lucide="scale" style="width:18px;height:18px;color:var(--accent);"></i> 4. Availability &amp; Service Statement</h2>
+      <p>External AI availability depends on API quotas and network connectivity. When cloud quotas are reached, the platform switches to local Ollama inference when installed, or falls back to basic offline scoring so core practice features remain usable.</p>
+    </div>
+
+    <footer class="doc-footer">
+      <span>AI Interview Copilot</span>
+      <div style="display:flex;gap:16px;">
+        <a href="/faq">FAQ</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/dashboard">Dashboard</a>
+      </div>
+    </footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>
+
