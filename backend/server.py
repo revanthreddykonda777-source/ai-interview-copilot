@@ -1252,9 +1252,13 @@ def _ensure_question_bank_seeded():
     conn = sqlite3.connect(DEFAULT_DB_PATH)
     try:
         count = conn.execute("SELECT COUNT(*) FROM questions").fetchone()[0]
+        # Older databases hold auto-templated placeholder questions; replace them.
+        stale = conn.execute(
+            "SELECT 1 FROM questions WHERE answer LIKE 'An excellent answer%' LIMIT 1"
+        ).fetchone()
     finally:
         conn.close()
-    if count == 0:
+    if count == 0 or stale:
         from backend.scripts.populate_questions import populate_all_questions
         populate_all_questions(DEFAULT_DB_PATH)
 

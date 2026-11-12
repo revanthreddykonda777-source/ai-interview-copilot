@@ -93,7 +93,11 @@ function App() {
       }
 
       setTopic(topicId);
-      setQuestions(topicId === "resume_tailored" ? data : shuffle(data));
+      // Shuffle for variety, but keep a real interview's warm-up -> deep-dive order.
+      const LEVEL = { Beginner: 0, Intermediate: 1, Advanced: 2 };
+      setQuestions(topicId === "resume_tailored"
+        ? data
+        : shuffle(data).sort((a, b) => (LEVEL[a.difficulty] ?? 1) - (LEVEL[b.difficulty] ?? 1)));
       setQIndex(0);
       setScore(0);
       setHintsUsed(0);
@@ -162,7 +166,7 @@ function App() {
               <nav className="top-nav">
                 <div className="brand-mark">
                   <span className="brand-dot" />
-                  <span>Interview Copilot</span>
+                  <span>AI Interview Copilot</span>
                 </div>
                 <div className="top-nav-links">
                   <button

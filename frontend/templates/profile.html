@@ -57,7 +57,7 @@
 
     <div class="profile-card">
       <h2>Account Details</h2>
-      <p class="profile-sub">{{ email }} · Role: <strong>{{ role }}</strong></p>
+      <p class="profile-sub">{{ email }}{% if role == 'admin' %} · <strong>Admin</strong>{% endif %}</p>
       <form method="POST" action="/profile">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <input type="hidden" name="action" value="update_name" />

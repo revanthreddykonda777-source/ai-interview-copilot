@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    const form = document.querySelector("form");
-    const textarea = document.querySelector("textarea");
-    const button = document.querySelector("button[type='submit']");
+    // Scope everything to the answer form; the nav's Sign Out form comes first in the page.
+    const textarea = document.querySelector("textarea[name='user_answer']");
+    if (!textarea) return;
+    const form = textarea.closest("form");
+    const button = form.querySelector("button[type='submit']");
 
     // Word Counter
     const counter = document.createElement("p");
@@ -13,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     counter.style.fontWeight = "600";
     counter.innerHTML = "Words: 0";
 
-    textarea.parentNode.insertBefore(counter, button);
+    textarea.insertAdjacentElement("afterend", counter);
 
     textarea.addEventListener("input", function () {
 

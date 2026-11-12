@@ -336,10 +336,6 @@ function QuestionCard({ question, questionNumber, total, topicId, isBookmarked =
         setAiScore(data.score);
         setAiCorrect(data.correct);
         recordAttempt(data.correct, data.score || 0);
-        if (data.correct) {
-          setGotIt(true);
-          setTimeout(() => onCorrect(), 2200);
-        }
       } else {
         alert(data.error || "Evaluation failed");
       }
@@ -517,7 +513,6 @@ function QuestionCard({ question, questionNumber, total, topicId, isBookmarked =
                 </div>
               )}
               <div className="feedback-copy">{aiFeedback}</div>
-              {aiCorrect && <p className="feedback-next-note">Advancing to the next question…</p>}
             </div>
           </motion.div>
         )}
@@ -534,7 +529,7 @@ function QuestionCard({ question, questionNumber, total, topicId, isBookmarked =
                 onClick={handleEvaluate}
                 disabled={loading}
               >
-                <LucideIcon name="Sparkles" size={15} />
+                <LucideIcon name="ClipboardCheck" size={15} />
                 <span>{loading ? "Evaluating..." : "Evaluate Answer"}</span>
               </motion.button>
 
@@ -569,6 +564,17 @@ function QuestionCard({ question, questionNumber, total, topicId, isBookmarked =
               </button>
             </div>
           </>
+        )}
+
+        {aiFeedback && aiCorrect && !gotIt && (
+          <motion.button
+            whileHover={{ y: -1.5 }}
+            whileTap={{ scale: 0.98 }}
+            className="btn btn--correct"
+            onClick={() => { setGotIt(true); onCorrect(); }}
+          >
+            <LucideIcon name="ArrowRight" size={15} /> Next question
+          </motion.button>
         )}
 
         {aiFeedback && !aiCorrect && !gotIt && (

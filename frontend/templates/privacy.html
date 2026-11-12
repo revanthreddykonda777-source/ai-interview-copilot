@@ -31,7 +31,7 @@
 <body>
   <div class="doc-wrapper">
     <header class="doc-header">
-      <a href="/" class="doc-logo"><span class="brand-dot"></span><span>Interview Copilot</span></a>
+      <a href="/" class="doc-logo"><span class="brand-dot"></span><span>AI Interview Copilot</span></a>
       <nav class="doc-nav">
         <a href="/faq" class="doc-pill">FAQ</a>
         <a href="/privacy" class="doc-pill active">Privacy</a>
@@ -57,11 +57,11 @@
     </div>
 
     <div class="doc-card">
-      <h2><i data-lucide="cpu" style="width:18px;height:18px;color:var(--accent);"></i> 2. AI Processing (Gemini &amp; Local Ollama)</h2>
+      <h2><i data-lucide="cpu" style="width:18px;height:18px;color:var(--accent);"></i> 2. AI Processing (Google Gemini)</h2>
       <p>When you request resume feedback, question generation, answer evaluation, follow-up questions, or chat coaching:</p>
       <ul>
         <li><strong>Google Gemini API:</strong> Relevant text (resume text, question, or answer) is sent over HTTPS to Google’s Generative Language API using your configured API key.</li>
-        <li><strong>Ollama Fallback:</strong> If Gemini is unavailable or hits quota limits, prompts are processed locally on your machine via Ollama (<code>127.0.0.1:11434</code>) with no external transmission.</li>
+        <li><strong>Self-hosted Ollama (optional):</strong> The hosted site uses Google Gemini only. If you run the project yourself with Ollama installed, prompts can instead be processed by a local model on that machine.</li>
       </ul>
     </div>
 

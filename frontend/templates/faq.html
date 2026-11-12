@@ -33,7 +33,7 @@
 <body>
   <div class="doc-wrapper">
     <header class="doc-header">
-      <a href="/" class="doc-logo"><span class="brand-dot"></span><span>Interview Copilot</span></a>
+      <a href="/" class="doc-logo"><span class="brand-dot"></span><span>AI Interview Copilot</span></a>
       <nav class="doc-nav">
         <a href="/faq" class="doc-pill active">FAQ</a>
         <a href="/privacy" class="doc-pill">Privacy</a>
@@ -65,7 +65,7 @@
           <i data-lucide="chevron-down" style="width:18px;height:18px;color:var(--ink-soft);"></i>
         </summary>
         <div class="faq-answer">
-          AI Interview Copilot automatically switches to your local Ollama model (such as <code>qwen3:1.7b</code>) to handle resume analysis, question generation, answer evaluation, follow-up questions, and chat. If neither AI service is reachable, answer evaluation falls back to built-in similarity scoring so practice never stops.
+          The app tries several Gemini models in turn, since each has its own quota. If all of them are busy, answer evaluation falls back to built-in similarity scoring so practice never stops. (If you run the project yourself with Ollama installed, it can also use a local model.)
         </div>
       </details>
 

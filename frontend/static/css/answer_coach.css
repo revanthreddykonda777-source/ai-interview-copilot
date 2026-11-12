@@ -46,7 +46,6 @@ h1 {
 .card {
     background: var(--surface);
     border: 1px solid var(--border-strong);
-    border-top: 3px solid var(--accent);
     padding: 24px;
     border-radius: 16px;
     margin: 20px 0;
