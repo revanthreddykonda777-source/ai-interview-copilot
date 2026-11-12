@@ -1,5 +1,7 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
+import threading
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, g, abort
 import hashlib
 import hmac
@@ -69,6 +71,13 @@ MIN_PASSWORD_LENGTH = 8
 MAX_PASSWORD_LENGTH = 128
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _RATE_BUCKETS = defaultdict(list)
+_RATE_LOCK = threading.Lock()
+
+# Behind Render's proxy every request arrives from 127.0.0.1, which would make all
+# users share one rate-limit bucket. Trust exactly one proxy hop for the real IP,
+# but only when actually hosted on Render (so the header can't be spoofed locally).
+if os.getenv("RENDER") or os.getenv("TRUST_PROXY", "").lower() == "true":
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 
 def _client_ip():
@@ -78,13 +87,14 @@ def _client_ip():
 def _is_rate_limited(bucket_name, limit, window_seconds):
     now = time.time()
     key = f"{bucket_name}:{_client_ip()}"
-    timestamps = [t for t in _RATE_BUCKETS[key] if now - t < window_seconds]
-    if len(timestamps) >= limit:
+    with _RATE_LOCK:
+        timestamps = [t for t in _RATE_BUCKETS[key] if now - t < window_seconds]
+        if len(timestamps) >= limit:
+            _RATE_BUCKETS[key] = timestamps
+            return True
+        timestamps.append(now)
         _RATE_BUCKETS[key] = timestamps
-        return True
-    timestamps.append(now)
-    _RATE_BUCKETS[key] = timestamps
-    return False
+        return False
 
 
 def get_csrf_token():
@@ -425,6 +435,11 @@ def upload_resume():
 
     if "user_id" not in session:
         return redirect(url_for("login"))
+
+    # Each upload makes 2 AI calls; cap it so one user can't burn the shared Gemini quota.
+    if _is_rate_limited("resume_upload", limit=5, window_seconds=600):
+        flash("You've analyzed several resumes recently. Please wait a few minutes and try again.", "error")
+        return redirect(url_for("resume"))
 
     file = request.files.get("resume")
     job_description = (request.form.get("job_description") or "").strip()[:5000]
