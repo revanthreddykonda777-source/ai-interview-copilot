@@ -25,7 +25,7 @@
 | Backend | Python, Flask, Gunicorn |
 | AI | Google Gemini (fast flash-lite models with automatic fallback across models), with an optional local Ollama fallback |
 | Resume parsing | pdfplumber (PDF), built-in DOCX XML parsing |
-| Database | SQLite |
+| Database | PostgreSQL on Neon (production), SQLite (local development) |
 | Frontend | Jinja templates, React 18, Framer Motion, Three.js, Lucide icons |
 | Hosting | Render (Blueprint via `render.yaml`) |
 
@@ -66,7 +66,7 @@ Open http://127.0.0.1:5000. The question bank is seeded automatically on the fir
 
 1. Fork this repo.
 2. On [Render](https://render.com), choose **New → Blueprint** and select your fork. `render.yaml` sets everything up on the free plan.
-3. Paste your `GOOGLE_API_KEY` when prompted, then click **Deploy**.
+3. Paste your `GOOGLE_API_KEY` and a Postgres `DATABASE_URL` (a free [Neon](https://neon.tech) database works) when prompted, then click **Deploy**. Without `DATABASE_URL` the app falls back to SQLite, which Render's free tier wipes on every restart.
 
 ## Project structure
 
@@ -74,7 +74,8 @@ Open http://127.0.0.1:5000. The question bank is seeded automatically on the fir
 app.py                  # entry point (gunicorn app:app)
 backend/
   server.py             # Flask routes, auth, security, rate limiting
-  db.py                 # SQLite schema and migrations
+  database.py           # Postgres (DATABASE_URL) or SQLite connection layer
+  db.py                 # schema and migrations
   ai/                   # Gemini client (multi-model fallback), Ollama fallback, router
   services/             # resume parsing, skill extraction, question generation, answer scoring
   scripts/              # question-bank seeding and admin tools
@@ -86,7 +87,6 @@ render.yaml, Procfile   # deployment config
 
 ## Known limitations
 
-- On Render's free tier the SQLite database lives on temporary storage, so accounts and progress reset whenever the server restarts or redeploys. A hosted Postgres database would make them permanent.
 - Password-reset emails aren't sent yet; reset links appear in the server logs.
 - The Gemini free tier allows only a few requests per minute, so heavy simultaneous use can fall back to basic, non-AI scoring.
 

@@ -5,3 +5,5 @@ google-generativeai
 python-dotenv
 ollama
 gunicorn
+psycopg[binary]==3.2.10
+psycopg-pool==3.2.6

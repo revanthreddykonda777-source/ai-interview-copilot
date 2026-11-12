@@ -2,13 +2,13 @@
 
 import argparse
 import os
-import sqlite3
 import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+from backend.database import connect
 from backend.db import DEFAULT_DB_PATH, create_database
 
 
@@ -20,8 +20,7 @@ def main():
     args = parser.parse_args()
 
     create_database(DEFAULT_DB_PATH)
-    conn = sqlite3.connect(DEFAULT_DB_PATH)
-    conn.row_factory = sqlite3.Row
+    conn = connect()
 
     if args.promote:
         email = args.promote.strip().lower()

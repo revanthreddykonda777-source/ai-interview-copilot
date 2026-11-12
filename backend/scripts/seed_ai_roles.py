@@ -1,11 +1,11 @@
 import os
-import sqlite3
 import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+from backend.database import connect
 from backend.db import DEFAULT_DB_PATH
 
 
@@ -1028,7 +1028,7 @@ AI_ROLE_QUESTIONS = {
 
 
 def seed_ai_roles(db_path=DEFAULT_DB_PATH):
-    conn = sqlite3.connect(db_path)
+    conn = connect(db_path)
     cursor = conn.cursor()
     total = 0
     for topic_id, items in AI_ROLE_QUESTIONS.items():

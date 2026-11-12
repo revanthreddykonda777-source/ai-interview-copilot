@@ -1,13 +1,13 @@
 """Seed the question bank: 15 core tracks from question_bank.json + 5 AI role tracks."""
 import json
 import os
-import sqlite3
 import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+from backend.database import connect
 from backend.db import DEFAULT_DB_PATH
 from backend.scripts.seed_ai_roles import seed_ai_roles
 
@@ -21,7 +21,7 @@ def load_question_bank(path=QUESTION_BANK_PATH):
 
 def populate_all_questions(db_path=DEFAULT_DB_PATH):
     bank = load_question_bank()
-    conn = sqlite3.connect(db_path)
+    conn = connect(db_path)
     total_inserted = 0
     try:
         for topic_id, questions in bank.items():

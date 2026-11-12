@@ -5,7 +5,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, g, abort
 import hashlib
 import hmac
-import sqlite3
 import os
 import re
 import secrets
@@ -13,6 +12,7 @@ import time
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from backend.database import connect as db_connect
 from backend.db import create_database, DEFAULT_DB_PATH
 from backend.services.resume_parser import extract_text
 from backend.services.skill_extractor import extract_skills
@@ -156,8 +156,7 @@ def handle_large_upload(err):
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DEFAULT_DB_PATH)
-        db.row_factory = sqlite3.Row
+        db = g._database = db_connect()
     return db
 
 @app.teardown_appcontext
@@ -1249,12 +1248,12 @@ create_database()
 
 
 def _ensure_question_bank_seeded():
-    conn = sqlite3.connect(DEFAULT_DB_PATH)
+    conn = db_connect()
     try:
-        count = conn.execute("SELECT COUNT(*) FROM questions").fetchone()[0]
+        count = conn.execute("SELECT COUNT(*) AS cnt FROM questions").fetchone()["cnt"]
         # Older databases hold auto-templated placeholder questions; replace them.
         stale = conn.execute(
-            "SELECT 1 FROM questions WHERE answer LIKE 'An excellent answer%' LIMIT 1"
+            "SELECT 1 AS hit FROM questions WHERE answer LIKE ? LIMIT 1", ("An excellent answer%",)
         ).fetchone()
     finally:
         conn.close()
