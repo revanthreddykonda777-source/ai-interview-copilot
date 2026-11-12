@@ -52,7 +52,11 @@ class PgConnection:
 
     def close(self):
         if self._pool is not None:
-            # Hand the connection back; roll back anything left uncommitted.
+            # End any read-only transaction ourselves so the pool doesn't warn, then hand it back.
+            try:
+                self._conn.rollback()
+            except Exception:
+                pass
             self._pool.putconn(self._conn)
             self._pool = None
         else:
