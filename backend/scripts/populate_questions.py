@@ -10,9 +10,7 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from backend.db import DEFAULT_DB_PATH
-
-conn = sqlite3.connect(DEFAULT_DB_PATH)
-cursor = conn.cursor()
+from backend.scripts.seed_ai_roles import seed_ai_roles
 
 # Define topics and their specific keywords/concepts
 topics_data = {
@@ -69,57 +67,60 @@ query_templates = [
 
 tech_topics = {"html", "css", "javascript", "sql", "react", "python", "typescript", "git", "nodejs", "dsa"}
 
-# Generate and insert questions
-total_inserted = 0
+def populate_all_questions(db_path=DEFAULT_DB_PATH):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    total_inserted = 0
 
-for topic_id, keywords in topics_data.items():
-    # Only clear this specific topic's rows so resume_<user_id> questions
-    # (and any other topic already populated) are never touched.
-    cursor.execute("DELETE FROM questions WHERE topic_id = ?", (topic_id,))
-    questions_for_topic = []
+    for topic_id, keywords in topics_data.items():
+        # Only clear this specific topic's rows so resume_<user_id> questions
+        # (and any other topic already populated) are never touched.
+        cursor.execute("DELETE FROM questions WHERE topic_id = ?", (topic_id,))
+        questions_for_topic = []
 
-    for i in range(50):
-        keyword = keywords[i % len(keywords)]
-        
-        # 30% chance for a coding question if it's a tech topic
-        if topic_id in tech_topics and random.random() < 0.3:
-            if topic_id == "sql":
-                template, difficulty = random.choice(query_templates)
+        for i in range(50):
+            keyword = keywords[i % len(keywords)]
+
+            # 30% chance for a coding question if it's a tech topic
+            if topic_id in tech_topics and random.random() < 0.3:
+                if topic_id == "sql":
+                    template, difficulty = random.choice(query_templates)
+                else:
+                    template, difficulty = random.choice(coding_templates)
+                is_coding = True
             else:
-                template, difficulty = random.choice(coding_templates)
-            is_coding = True
-        else:
-            template, difficulty = random.choice(question_templates)
-            is_coding = False
-            
-        q_text = template.format(keyword=keyword)
-        
-        if is_coding:
-            if topic_id == "sql":
-                a_text = f"An excellent answer for {keyword} should include a well-structured SQL query. Ensure table names are clear, joins are handled correctly, and the logic directly demonstrates the core concept."
-                h_text = f"Think about the SQL syntax required for {keyword}. Start by writing the SELECT or specific clause structure."
+                template, difficulty = random.choice(question_templates)
+                is_coding = False
+
+            q_text = template.format(keyword=keyword)
+
+            if is_coding:
+                if topic_id == "sql":
+                    a_text = f"An excellent answer for {keyword} should include a well-structured SQL query. Ensure table names are clear, joins are handled correctly, and the logic directly demonstrates the core concept."
+                    h_text = f"Think about the SQL syntax required for {keyword}. Start by writing the SELECT or specific clause structure."
+                else:
+                    a_text = f"An excellent answer for {keyword} should include a well-structured code snippet. Ensure variables are named clearly, edge cases are handled, and the logic directly demonstrates the core concept."
+                    h_text = f"Think about the syntax required for {keyword}. Start by writing the function signature or the outer structure."
             else:
-                a_text = f"An excellent answer for {keyword} should include a well-structured code snippet. Ensure variables are named clearly, edge cases are handled, and the logic directly demonstrates the core concept."
-                h_text = f"Think about the syntax required for {keyword}. Start by writing the function signature or the outer structure."
-        else:
-            a_text = f"An excellent answer covering {keyword} should define what it is, explain its primary use cases, and provide an example. Discussing best practices and potential pitfalls also demonstrates deep understanding."
-            h_text = f"Think about the core definition of {keyword} and where you have seen it used in projects."
-        
-        # Add to batch
-        q_type = "coding" if is_coding else "theoretical"
-        questions_for_topic.append((topic_id, difficulty, q_type, q_text, a_text, h_text))
-        total_inserted += 1
+                a_text = f"An excellent answer covering {keyword} should define what it is, explain its primary use cases, and provide an example. Discussing best practices and potential pitfalls also demonstrates deep understanding."
+                h_text = f"Think about the core definition of {keyword} and where you have seen it used in projects."
 
-    # Insert into database
-    cursor.executemany(
-        "INSERT INTO questions (topic_id, difficulty, type, question, answer, hint) VALUES (?, ?, ?, ?, ?, ?)",
-        questions_for_topic
-    )
+            q_type = "coding" if is_coding else "theoretical"
+            questions_for_topic.append((topic_id, difficulty, q_type, q_text, a_text, h_text))
+            total_inserted += 1
 
-conn.commit()
-conn.close()
+        cursor.executemany(
+            "INSERT INTO questions (topic_id, difficulty, type, question, answer, hint) VALUES (?, ?, ?, ?, ?, ?)",
+            questions_for_topic
+        )
 
-from backend.scripts.seed_ai_roles import seed_ai_roles
-total_ai = seed_ai_roles()
+    conn.commit()
+    conn.close()
 
-print(f"Successfully inserted {total_inserted} core + {total_ai} AI role questions into the database!")
+    total_ai = seed_ai_roles(db_path=db_path)
+    print(f"Successfully inserted {total_inserted} core + {total_ai} AI role questions into the database!")
+    return total_inserted + total_ai
+
+
+if __name__ == "__main__":
+    populate_all_questions()

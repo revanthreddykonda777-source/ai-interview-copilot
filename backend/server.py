@@ -1192,5 +1192,21 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Ensure database tables exist on startup
 create_database()
 
+
+def _ensure_question_bank_seeded():
+    conn = sqlite3.connect(DEFAULT_DB_PATH)
+    try:
+        count = conn.execute("SELECT COUNT(*) FROM questions").fetchone()[0]
+    finally:
+        conn.close()
+    if count == 0:
+        from backend.scripts.populate_questions import populate_all_questions
+        populate_all_questions(DEFAULT_DB_PATH)
+
+
+_ensure_question_bank_seeded()
+
 if __name__ == "__main__":
-    app.run(debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")
+    port = int(os.getenv("PORT", 5000))
+    host = os.getenv("HOST", "0.0.0.0" if "PORT" in os.environ else "127.0.0.1")
+    app.run(host=host, port=port, debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")
