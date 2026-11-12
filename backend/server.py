@@ -1,4 +1,5 @@
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, g, abort
 import hashlib
 import hmac
@@ -43,6 +44,10 @@ def _get_or_create_secret_key():
     except OSError:
         pass
     return generated
+
+
+# Shared pool for running independent AI calls concurrently within a request.
+_AI_POOL = ThreadPoolExecutor(max_workers=4)
 
 
 app = Flask(
@@ -488,8 +493,15 @@ Resume:
 {text[:15000]}
 """
 
+    # Run the resume review and question generation at the same time:
+    # they are independent AI calls, so waiting for them one after the other doubles the wait.
+    feedback_future = _AI_POOL.submit(evaluate_resume, prompt)
+    questions_future = _AI_POOL.submit(
+        generate_interview_questions, text, skills=found_skills, job_description=job_description
+    )
+
     try:
-        feedback = evaluate_resume(prompt)
+        feedback = feedback_future.result()
     except Exception as e:
         print("Resume analysis AI error:", e)
         feedback = "AI feedback is temporarily unavailable. Please try again later."
@@ -503,7 +515,7 @@ Resume:
 
     questions = []
     try:
-        generated = generate_interview_questions(text, skills=found_skills, job_description=job_description)
+        generated = questions_future.result()
         topic_id = f"resume_{session['user_id']}"
 
         rows = []
