@@ -861,7 +861,7 @@ def _parse_coach_sections(text):
         header_raw = match.group(0).rstrip(":").strip().lower()
         start = match.end()
         end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
-        body = text[start:end].strip()
+        body = text[start:end].strip().replace("**", "")
         for key, label in headings:
             if header_raw == label.lower():
                 sections[key] = body
