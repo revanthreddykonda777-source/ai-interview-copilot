@@ -62,6 +62,31 @@ python app.py
 
 Open http://127.0.0.1:5000. The question bank is seeded automatically on the first run.
 
+### Run offline with Ollama (optional, no limits)
+
+The app can use a local AI model through [Ollama](https://ollama.com) when Gemini is unavailable, or with no Gemini key at all.
+
+1. Install Ollama from https://ollama.com/download.
+2. Download a small model once (about 2 GB):
+
+   ```bash
+   ollama pull qwen2.5:3b
+   ```
+
+3. Run `python app.py` as usual.
+
+The app detects Ollama, starts it in the background if it isn't running, and picks a model automatically (`qwen2.5:3b`, then `qwen3:1.7b`, then any installed model). To choose a different model, add `OLLAMA_MODEL=model-name` to `.env`. Without a `GOOGLE_API_KEY`, every AI feature (answer evaluation, question generation, follow-ups and chat) runs on Ollama, fully offline and with no rate limits. Responses are slower than Gemini on most laptops.
+
+## How the AI fallback works
+
+Every AI request goes through a fallback chain, so the app always returns a result:
+
+1. **Gemini**, trying four models in order: `gemini-3.1-flash-lite` → `gemini-3.5-flash-lite` → `gemini-flash-lite-latest` → `gemini-3-flash-preview`. Google sets a separate quota for each model, so when one model is busy or out of quota the next one answers on the same API key. Override the list with a comma-separated `GEMINI_MODELS` in `.env`.
+2. **Ollama**, when it is installed locally (see above). It isn't available on the hosted Render instance.
+3. **Basic mode**, when no AI is available: answers are scored by keyword match against the model answer, and follow-ups and chat return standard coaching tips. Resume skill matching still works.
+
+The 1,000-question practice bank, progress tracking, bookmarks and history don't use AI, so they always work.
+
 ## Deploy your own (Render)
 
 1. Fork this repo.
@@ -88,7 +113,7 @@ render.yaml, Procfile   # deployment config
 ## Known limitations
 
 - Password-reset emails aren't sent yet; reset links appear in the server logs.
-- The Gemini free tier allows only a few requests per minute, so heavy simultaneous use can fall back to basic, non-AI scoring.
+- The Gemini free tier has per-minute and per-day limits, so on the hosted site very heavy use can fall back to basic, non-AI scoring until the daily quota resets.
 
 ## Author
 
